@@ -1,0 +1,8 @@
+project(Advection1d LANGUAGES CXX C)
+
+include_directories(
+    ../../Util
+)
+add_executable(${PROJECT_NAME}
+                main.cpp 
+                Advection1d.cpp)
