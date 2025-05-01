@@ -36,30 +36,34 @@ Field2d Advection2d::calculate(const Field2d& f) {
 
     for (int j = 1; j <= MESH_Y - 2; j++) {
         for (int i = 1; i <= MESH_X - 2; i++) {
-            if (CONST_U >= 0 && CONST_V >= 0) {
-                f_next[j][i] = f[j][i] + CONST_U * DELTA_T / DELTA_X * (f[j][i - 1] - f[j][i]) + CONST_V * DELTA_T / DELTA_Y * (f[j-1][i] - f[j][i]);
-            }
-            else if (CONST_U < 0 && CONST_V >= 0) {
-                f_next[j][i] = f[j][i] + CONST_U * DELTA_T / DELTA_X * (f[j][i] - f[j][i+1]) + CONST_V * DELTA_T / DELTA_Y * (f[j-1][i] - f[j][i]);
-            }
-            else if (CONST_U >= 0 && CONST_V < 0) {
-                f_next[j][i] = f[j][i] + CONST_U * DELTA_T / DELTA_X * (f[j][i-1] - f[j][i]) + CONST_V * DELTA_T / DELTA_Y * (f[j][i] - f[j+1][i]);
-            }
-            else {
-                f_next[j][i] = f[j][i] + CONST_U * DELTA_T / DELTA_X * (f[j][i] - f[j][i+1]) + CONST_V * DELTA_T / DELTA_Y * (f[j][i] - f[j+1][i]);
-            }
+            f_next[j][i] = f[j][i] + calculateTerm(f, i, j);
         }
     }
     updateBoundaryCondition(f_next);
     return f_next;
 }
 
+Value Advection2d::calculateTerm(const Field2d& f, int i, int j) const {
+    if (CONST_U >= 0 && CONST_V >= 0) {
+        return CONST_U * DELTA_T / DELTA_X * (f[j][i - 1] - f[j][i]) + CONST_V * DELTA_T / DELTA_Y * (f[j-1][i] - f[j][i]);
+    }
+    else if (CONST_U < 0 && CONST_V >= 0) {
+        return CONST_U * DELTA_T / DELTA_X * (f[j][i] - f[j][i+1]) + CONST_V * DELTA_T / DELTA_Y * (f[j-1][i] - f[j][i]);
+    }
+    else if (CONST_U >= 0 && CONST_V < 0) {
+        return CONST_U * DELTA_T / DELTA_X * (f[j][i-1] - f[j][i]) + CONST_V * DELTA_T / DELTA_Y * (f[j][i] - f[j+1][i]);
+    }
+    else {
+        return CONST_U * DELTA_T / DELTA_X * (f[j][i] - f[j][i+1]) + CONST_V * DELTA_T / DELTA_Y * (f[j][i] - f[j+1][i]);
+    }
+}
+
 void Advection2d::updateBoundaryCondition(Field2d& f) {
-    for (int j = 0; j < MESH_Y - 1; j++) {
+    for (int j = 1; j < MESH_Y - 1; j++) {
         f[j][0] = f[j][MESH_X - 2];
         f[j][MESH_X - 1] = f[j][1];
     }
-    for (int i = 0; i < MESH_X - 1; i++) {
+    for (int i = 1; i < MESH_X - 1; i++) {
         f[0][i] = f[MESH_Y - 2][i];
         f[MESH_Y - 1][i] = f[1][i];
     }

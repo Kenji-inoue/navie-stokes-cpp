@@ -3,7 +3,10 @@ project(Diffusion2d LANGUAGES CXX C)
 include_directories(
     ../../Util
 )
+add_library(${PROJECT_NAME}Lib
+            Diffusion2d.cpp)
+
 add_executable(${PROJECT_NAME}
-                main.cpp 
-                Diffusion2d.cpp)
-target_link_libraries(${PROJECT_NAME} Util)
+                main.cpp)
+
+target_link_libraries(${PROJECT_NAME} Util ${PROJECT_NAME}Lib)
