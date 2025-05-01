@@ -1,0 +1,4 @@
+project(Diffusion1d LANGUAGES CXX C)
+add_executable(${PROJECT_NAME}
+                main.cpp 
+                Diffusion1d.cpp)
