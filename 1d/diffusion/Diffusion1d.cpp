@@ -1,17 +1,13 @@
 #include <iostream>
-#include <vector>
 #include <string>
 #include <stdexcept>
 #include "Diffusion1d.h"
-const int MESH_X = 10;
-std::vector<double> f(MESH_X);
-std::vector<double> f_next(MESH_X);
 
-const double CONST_A = 1e-5;
-const double DELTA_X = 0.001;
-const double DELTA_T = 0.01;
-
-Diffusion1d::Diffusion1d() {
+Diffusion1d::Diffusion1d(int meshX, double constA, double deltaX, double deltaT) 
+    : MESH_X(meshX), CONST_A(constA), DELTA_X(deltaX), DELTA_T(deltaT)
+{
+    f.resize(MESH_X);
+    f_next.resize(MESH_X);
     validateTime();
     initializeField();
 }
