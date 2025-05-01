@@ -1,3 +1,4 @@
+#include <iostream>
 #include "FieldUtil.h"
 
 void FieldUtil::display(const Field1d& f, int time, int interval) {

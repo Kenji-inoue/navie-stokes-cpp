@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <stdexcept>
 #include "Advection1d.h"
@@ -18,12 +17,13 @@ void Advection1d::validateTime() {
 
 Field1d Advection1d::calculate(const Field1d& f) {
     Field1d f_next(MESH_X);
+    const auto coeff = (CONST_U * DELTA_T / DELTA_X);
     for (int i = 1; i <= MESH_X - 2; i++) {
         if (CONST_U >= 0) {
-            f_next[i] = f[i] + (CONST_U * DELTA_T / DELTA_X) * (f[i - 1] - f[i]);
+            f_next[i] = f[i] + coeff * (f[i-1] - f[i]);
         }
         else {
-            f_next[i] = f[i] + (CONST_U * DELTA_T / DELTA_X) * (f[i] - f[i+1]);
+            f_next[i] = f[i] + coeff * (f[i] - f[i+1]);
         }
     }
     periodicBoundaryCondition(f_next);

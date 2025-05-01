@@ -1,4 +1,3 @@
-#include <iostream>
 #include <string>
 #include <stdexcept>
 #include "Diffusion1d.h"
