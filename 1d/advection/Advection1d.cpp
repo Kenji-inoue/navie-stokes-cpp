@@ -16,18 +16,6 @@ void Advection1d::validateTime() {
     }
 }
 
-void Advection1d::displayProcess(int time, int interval, const Field1d& f) {
-    if (time % interval != 0) {
-        return;
-    }
-
-    printf("t:%d", time);
-    for (int i = 0; i < MESH_X; i++) {
-        printf("%6.3f", f[i]);
-    }
-    printf("\n");
-}
-
 Field1d Advection1d::calculate(const Field1d& f) {
     Field1d f_next(MESH_X);
     for (int i = 1; i <= MESH_X - 2; i++) {

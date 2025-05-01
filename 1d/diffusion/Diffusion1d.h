@@ -7,9 +7,7 @@ public:
     Diffusion1d(int meshX, double constA, double deltaX, double deltaT);
     ~Diffusion1d() = default;
 
-    void displayProcess(int time, int interval, const Field1d& f);
     Field1d calculate(const Field1d& f);
-
 private:
     void validateTime();
     const int MESH_X;

@@ -1,4 +1,5 @@
 #include "Diffusion1d.h"
+#include "FieldUtil.h"
 #include <stdexcept>
 #include <iostream>
 
@@ -27,7 +28,7 @@ int main() {
         const int interval = 1;
         const int maxIterations = 10;
         for (int time = 0; time < maxIterations; time++) {
-            diffusion.displayProcess(time, interval, f);
+            FieldUtil::display(f, time, interval);
             f = diffusion.calculate(f);
         }
     } catch (const std::runtime_error& e) {
