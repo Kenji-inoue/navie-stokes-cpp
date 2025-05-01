@@ -1,0 +1,9 @@
+project(Advection2d LANGUAGES CXX C)
+
+include_directories(
+    ../../Util
+)
+add_executable(${PROJECT_NAME}
+                main.cpp 
+                Advection2d.cpp)
+target_link_libraries(${PROJECT_NAME} Util)
