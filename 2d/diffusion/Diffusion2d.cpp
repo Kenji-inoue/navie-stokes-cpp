@@ -20,9 +20,6 @@ void Diffusion2d::validateTime() {
 Field2d Diffusion2d::calculate(const Field2d& f) {
     Field2d f_next;
     FieldUtil::setSize(f_next, MESH_X, MESH_Y);
-    for (auto& row : f_next) {
-        row.resize(MESH_X);
-    }
 
     for (int j = 1; j <= MESH_Y - 2; j++) {
         for (int i = 1; i <= MESH_X - 2; i++) {

@@ -20,7 +20,8 @@ void initializeField(Field2d& f, int meshX, int meshY) {
 int main() {
     int meshX = 10;
     int meshY = meshX;
-    double constA = 1e-5;
+    double constU = 0.02;
+    double constV = 0.00;
     double deltaX = 0.001;
     double deltaY = deltaX;
     double deltaT = 0.01;
@@ -29,7 +30,7 @@ int main() {
     initializeField(f, meshX, meshY);
 
     try {
-        Advection2d diffusion(meshX, meshY, constA, deltaX, deltaY, deltaT);
+        Advection2d diffusion(meshX, meshY, constU, constV, deltaX, deltaY, deltaT);
         const int interval = 1;
         const int maxIterations = 10;
         for (int time = 0; time < maxIterations; time++) {
