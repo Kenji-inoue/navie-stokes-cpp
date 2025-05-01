@@ -24,8 +24,10 @@ int main() {
 
     try {
         Diffusion1d diffusion(meshX, constA, deltaX, deltaT);
-        for (int time = 0; time < 10; time++) {
-            diffusion.displayProcess(time, 1, f);
+        const int interval = 1;
+        const int maxIterations = 10;
+        for (int time = 0; time < maxIterations; time++) {
+            diffusion.displayProcess(time, interval, f);
             f = diffusion.calculate(f);
         }
     } catch (const std::runtime_error& e) {
