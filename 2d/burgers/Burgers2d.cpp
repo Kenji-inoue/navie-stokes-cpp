@@ -28,14 +28,18 @@ Velocity2d Burgers2d::calculate() {
 
     for (int j = 1; j <= MESH_Y - 2; j++) {
         for (int i = 1; i <= MESH_X - 2; i++) {
-            f_next.u[j][i] = m_f.u[j][i] + advection_.calculateVelocity(m_f.u, m_f.u, m_f.v, i, j) + diffusion_.calculateTerm(m_f.u, i, j);
-            f_next.v[j][i] = m_f.v[j][i] + advection_.calculateVelocity(m_f.v, m_f.u, m_f.v, i, j) + diffusion_.calculateTerm(m_f.v, i, j);
+            f_next.u[j][i] = m_f.u[j][i] + calculateTerm(m_f.u, m_f, i, j);
+            f_next.v[j][i] = m_f.v[j][i] + calculateTerm(m_f.v, m_f, i, j);
         }
     }
     updateBoundaryCondition(f_next.u);
     updateBoundaryCondition(f_next.v);
     updateVelocity(f_next);
     return m_f;
+}
+
+Value Burgers2d::calculateTerm(const Field2d& f, const Velocity2d& velocity, int i, int j) const {
+    return advection_.calculateVelocity(f, velocity.u, velocity.v, i, j) + diffusion_.calculateTerm(f, i, j);
 }
 
 void Burgers2d::updateBoundaryCondition(Field2d& f) {

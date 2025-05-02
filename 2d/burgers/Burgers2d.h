@@ -11,6 +11,7 @@ public:
     ~Burgers2d() = default;
 
     Velocity2d calculate();
+    Value calculateTerm(const Field2d& f, const Velocity2d& velocity, int i, int j) const;
     void validateTime();
     void updateBoundaryCondition(Field2d& f);
 private:
