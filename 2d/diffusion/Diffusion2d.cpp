@@ -23,11 +23,14 @@ Field2d Diffusion2d::calculate(const Field2d& f) {
 
     for (int j = 1; j <= MESH_Y - 2; j++) {
         for (int i = 1; i <= MESH_X - 2; i++) {
-            f_next[j][i] = 
-               f[j][i] + (CONST_A * DELTA_T) *
-            ( (f[j+1][i] - 2*f[j][i] + f[j-1][i]) / DELTA_Y / DELTA_Y + 
-              (f[j][i+1] - 2*f[j][i] + f[j][i-1]) / DELTA_X / DELTA_X );
+            f_next[j][i] = f[j][i] + calculateTerm(f, i, j);
         }
     }
     return f_next;
+}
+
+Value Diffusion2d::calculateTerm(const Field2d& f, int i, int j) const {
+    return (CONST_A * DELTA_T) *
+           ( (f[j+1][i] - 2*f[j][i] + f[j-1][i]) / DELTA_Y / DELTA_Y + 
+             (f[j][i+1] - 2*f[j][i] + f[j][i-1]) / DELTA_X / DELTA_X );
 }

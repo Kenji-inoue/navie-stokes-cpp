@@ -1,10 +1,10 @@
-project(Diffusion2d LANGUAGES CXX C)
+project(Poisson2d LANGUAGES CXX C)
 
 include_directories(
     ../../Util
 )
 add_library(${PROJECT_NAME}Lib
-            Diffusion2d.cpp)
+            Poisson2d.cpp)
 
 add_executable(${PROJECT_NAME}
                 main.cpp)

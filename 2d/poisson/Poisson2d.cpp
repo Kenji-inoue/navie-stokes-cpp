@@ -1,0 +1,39 @@
+#include <string>
+#include <stdexcept>
+#include "Poisson2d.h"
+#include "FieldUtil.h"
+
+Poisson2d::Poisson2d(int meshX, int meshY, double lx, double ly, double omega, double epsilon, double pRef) 
+    : MESH_X(meshX), MESH_Y(meshY), DX(lx / (meshX - 1)), DY(ly / (meshY - 1)), 
+    OMEGA(omega), EPSILON(epsilon), P_REF(pRef)
+{
+    //do nothing
+}
+
+
+int Poisson2d::calculate(Field2d& p, const Field2d& s, int iteration) {
+    FieldUtil::ClearField(p);
+    for (int time = 1; time <= iteration; time++) {
+        const auto residual = calculateTerm(p, s);
+        if (residual < EPSILON ){
+            return time;
+        }
+    }
+    throw std::runtime_error("Poisson equation calculation results did not converge!!\nRe-consider poisson equation or Use higher iteration value!!");
+    return iteration;
+}
+
+Value Poisson2d::calculateTerm(Field2d& p, const Field2d& s) const {
+    Value maxResidual = 0;
+    for (int j = 1; j <= MESH_Y - 2; j++) {
+        for (int i = 1; i <= MESH_X - 2; i++) {
+            const auto p_n = (1 - OMEGA) * p[j][i] + OMEGA * 
+            ((p[j][i + 1] + p[j][i - 1]) / DX / DX + (p[j + 1][i] + p[j - 1][i]) / DY / DY - s[j][i]) *
+            DX * DX * DY * DY / (2 * (DX * DX + DY * DY));
+            const auto currentResidual = std::abs(p_n - p[j][i]) / P_REF;
+            maxResidual = std::max(maxResidual, currentResidual);
+            p[j][i] = p_n;
+        }
+    }
+    return maxResidual;
+}

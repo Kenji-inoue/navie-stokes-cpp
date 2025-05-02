@@ -8,8 +8,10 @@ public:
     ~Diffusion2d() = default;
 
     Field2d calculate(const Field2d& f);
-private:
+
+    Value calculateTerm(const Field2d& f, int i, int j) const;
     void validateTime();
+private:
     const int MESH_X;
     const int MESH_Y;
     const double CONST_A;

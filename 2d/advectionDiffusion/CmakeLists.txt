@@ -1,0 +1,11 @@
+project(AdvectionDiffusion2d LANGUAGES CXX C)
+
+include_directories(
+    ../../Util
+    ../advection
+    ../diffusion
+)
+add_executable(${PROJECT_NAME}
+                main.cpp 
+                AdvectionDiffusion2d.cpp)
+target_link_libraries(${PROJECT_NAME} Util Advection2dLib Diffusion2dLib)
