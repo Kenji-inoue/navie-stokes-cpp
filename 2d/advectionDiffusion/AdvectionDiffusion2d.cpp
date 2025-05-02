@@ -12,7 +12,7 @@ AdvectionDiffusion2d::AdvectionDiffusion2d(int meshX, int meshY, double constA, 
 
 void AdvectionDiffusion2d::validateTime() {
     diffusion_.validateTime();
-    advection_.validateTime();
+    advection_.validateTime(CONST_U, CONST_V);
 }
 
 Field2d AdvectionDiffusion2d::calculate(const Field2d& f) {

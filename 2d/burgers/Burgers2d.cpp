@@ -3,31 +3,45 @@
 #include "Burgers2d.h"
 #include "FieldUtil.h"
 
-Burgers2d::Burgers2d(int meshX, int meshY, double constA, double constU, double constV, double deltaX, double deltaY, double deltaT) 
-    : MESH_X(meshX), MESH_Y(meshY), CONST_A(constA), CONST_U(constU), CONST_V(constV), DELTA_X(deltaX), DELTA_Y(deltaY), DELTA_T(deltaT),
-      diffusion_(meshX, meshY, constA, deltaX, deltaY, deltaT), advection_(meshX, meshY, constU, constV, deltaX, deltaY, deltaT)
+Burgers2d::Burgers2d(int meshX, int meshY, double reynolds, 
+                     double lx, double ly, double deltaT, Velocity2d f) 
+    : MESH_X(meshX), MESH_Y(meshY), REYNOLDS(reynolds), 
+      DX(lx / (meshX - 1)), DY(ly / (meshY - 1)), DELTA_T(deltaT), m_f(f),
+      diffusion_(meshX, meshY, 1/reynolds, DX, DY, deltaT), 
+      advection_(meshX, meshY, DX, DY, deltaT)
 {
     validateTime();
 }
 
 void Burgers2d::validateTime() {
     diffusion_.validateTime();
-    advection_.validateTime();
+
+    const auto maxU = FieldUtil::findMax(m_f.u);
+    const auto maxV = FieldUtil::findMax(m_f.v);
+    advection_.validateTime(maxU, maxV);
 }
 
-Field2d Burgers2d::calculate(const Field2d& f) {
-    Field2d f_next;
-    FieldUtil::setSize(f_next, MESH_X, MESH_Y);
+Velocity2d Burgers2d::calculate() {
+    Velocity2d f_next;
+    FieldUtil::setSize(f_next.u, MESH_X, MESH_Y);
+    FieldUtil::setSize(f_next.v, MESH_X, MESH_Y);
 
     for (int j = 1; j <= MESH_Y - 2; j++) {
         for (int i = 1; i <= MESH_X - 2; i++) {
-            f_next[j][i] = f[j][i] + advection_.calculateTerm(f, i, j) + diffusion_.calculateTerm(f, i, j);
+            f_next.u[j][i] = m_f.u[j][i] + advection_.calculateVelocity(m_f.u, m_f.u, m_f.v, i, j) + diffusion_.calculateTerm(m_f.u, i, j);
+            f_next.v[j][i] = m_f.v[j][i] + advection_.calculateVelocity(m_f.v, m_f.u, m_f.v, i, j) + diffusion_.calculateTerm(m_f.v, i, j);
         }
     }
-    updateBoundaryCondition(f_next);
-    return f_next;
+    updateBoundaryCondition(f_next.u);
+    updateBoundaryCondition(f_next.v);
+    updateVelocity(f_next);
+    return m_f;
 }
 
 void Burgers2d::updateBoundaryCondition(Field2d& f) {
     advection_.updateBoundaryCondition(f);
+}
+
+void Burgers2d::updateVelocity(Velocity2d& f) {
+    std::swap(m_f, f);
 }

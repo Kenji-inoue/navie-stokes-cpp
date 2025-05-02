@@ -3,16 +3,17 @@
 #include <stdexcept>
 #include <iostream>
 
-void initializeField(Field2d& f, int meshX, int meshY) {
+void initializeVelocity(Velocity2d& f, int meshX, int meshY, double lx, double ly) {
+    const double PI=3.14159;
+    const double K = 2 * PI;
+    const double DX = lx / (meshX - 1);
+    const double DY = ly / (meshY - 1);
     for (int j = 0; j < meshY; j++) {
         for (int i = 0; i < meshX; i++) {
-            if (4 <= i && i <= 5 &&
-                4 <= j && j <= 5) {
-                f[j][i] = 1.0;
-            }
-            else {
-                f[j][i] = 0.0;
-            }
+            const auto x = i * DX;
+            const auto y = j * DY;
+            f.u[j][i] = -1 * cos(K * x) * sin(K * y);
+            f.v[j][i] = sin(K * x) * cos(K * y);
         }
     }
 }
@@ -20,23 +21,23 @@ void initializeField(Field2d& f, int meshX, int meshY) {
 int main() {
     int meshX = 10;
     int meshY = meshX;
-    double constA = 1e-5;
-    double constU = 0.02;
-    double constV = 0.00;
-    double deltaX = 0.001;
-    double deltaY = deltaX;
-    double deltaT = 0.01; 
-    Field2d f;
-    FieldUtil::setSize(f, meshX, meshY);
-    initializeField(f, meshX, meshY);
+    double reynolds = 200;
+    double lx = 1.0;
+    double ly = lx;
+    double deltaT = 0.02; 
+    Velocity2d f;
+    FieldUtil::setSize(f.u, meshX, meshY);
+    FieldUtil::setSize(f.v, meshX, meshY);
+    initializeVelocity(f, meshX, meshY, lx, ly);
 
     try {
-        Burgers2d burgers(meshX, meshY, constA, constU, constV, deltaX, deltaY, deltaT);
+        Burgers2d burgers(meshX, meshY, reynolds, lx, ly, deltaT, f);
         const int interval = 1;
         const int maxIterations = 10;
         for (int time = 0; time < maxIterations; time++) {
-            FieldUtil::display(f, time, interval);
-            f = burgers.calculate(f);
+            FieldUtil::display(f.u, time, interval);
+            FieldUtil::display(f.v, time, interval);
+            f = burgers.calculate();
         }
     } catch (const std::runtime_error& e) {
         std::cerr << "Error: " << e.what() << std::endl;
