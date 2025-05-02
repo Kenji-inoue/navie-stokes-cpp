@@ -2,17 +2,17 @@
 #include "FieldUtil.h"
 #include <stdexcept>
 #include <iostream>
+#include <math.h>
 
-void initializeField(Field2d& f, int meshX, int meshY) {
+void initializeSourceTerm(Field2d& s, int meshX, int meshY, double lx, double ly) {
+    const double PI=3.14159;
+    const double K_X = 2 * PI;
+    const double K_Y = 2 * PI;
+    const double DX = lx / (meshX - 1);
+    const double DY = ly / (meshY - 1);
     for (int j = 0; j < meshY; j++) {
         for (int i = 0; i < meshX; i++) {
-            if (4 <= i && i <= 5 &&
-                4 <= j && j <= 5) {
-                f[j][i] = 1.0;
-            }
-            else {
-                f[j][i] = 0.0;
-            }
+            s[j][i] = -1 * (K_X * K_X + K_Y * K_Y) * sin(K_X * i * DX) * sin(K_Y * j * DY);
         }
     }
 }
@@ -20,22 +20,26 @@ void initializeField(Field2d& f, int meshX, int meshY) {
 int main() {
     int meshX = 10;
     int meshY = meshX;
-    double constA = 1e-5;
-    double deltaX = 0.001;
-    double deltaY = deltaX;
-    double deltaT = 0.01;
-    Field2d f;
-    FieldUtil::setSize(f, meshX, meshY);
-    initializeField(f, meshX, meshY);
+    double lx = 1.0;
+    double ly = lx;
+    double omega = 1.4;
+    double epsilon = 1e-7;
+    double pRef = 1.0;
+    Field2d s, p;
+    FieldUtil::setSize(s, meshX, meshY);
+    FieldUtil::setSize(p, meshX, meshY);
+    initializeSourceTerm(s, meshX, meshY, lx, ly);
 
     try {
-        Poisson2d diffusion(meshX, meshY, constA, deltaX, deltaY, deltaT);
-        const int interval = 1;
-        const int maxIterations = 10;
+        Poisson2d poisson(meshX, meshY, lx, ly, omega, epsilon, pRef);
+        const int interval = 10;
+        const int maxIterations = 100;
+        int iteration = 0;
         for (int time = 0; time < maxIterations; time++) {
-            FieldUtil::display(f, time, interval);
-            f = diffusion.calculate(f);
+            FieldUtil::display(p, time, interval);
+            iteration = poisson.calculate(p, s, maxIterations);
         }
+        printf("Iteration: %d\n", iteration);
     } catch (const std::runtime_error& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;

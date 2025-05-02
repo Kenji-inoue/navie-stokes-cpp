@@ -4,18 +4,19 @@
 class Poisson2d
 {
 public:
-    Poisson2d(int meshX, int meshY, double constA, double deltaX, double deltaY, double deltaT);
+    Poisson2d(int meshX, int meshY, 
+              double lx, double ly, double omega, double epsilon, double pRef);
     ~Poisson2d() = default;
 
-    Field2d calculate(const Field2d& f);
+    int calculate(Field2d& p, const Field2d& s, int iteration);
 
-    Value calculateTerm(const Field2d& f, int i, int j) const;
-    void validateTime();
+    Value calculateTerm(Field2d& p, const Field2d& s) const;
 private:
     const int MESH_X;
     const int MESH_Y;
-    const double CONST_A;
-    const double DELTA_X;
-    const double DELTA_Y;
-    const double DELTA_T;
+    const double DX;
+    const double DY;
+    const double OMEGA;
+    const double EPSILON;
+    const double P_REF;
 };

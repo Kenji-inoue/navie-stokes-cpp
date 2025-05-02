@@ -34,3 +34,13 @@ void FieldUtil::setSize(Field2d& f, int x, int y) {
         row.resize(x);
     }
 }
+
+void FieldUtil::SetField(Field2d& f, Value value) {
+    for (auto& row : f) {
+        std::fill(row.begin(), row.end(), value);
+    }
+}
+
+void FieldUtil::ClearField(Field2d& f) {
+    SetField(f, 0.0);
+}
