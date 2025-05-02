@@ -5,7 +5,7 @@ class Poisson2d
 {
 public:
     Poisson2d(int meshX, int meshY, 
-              double lx, double ly, double omega, double epsilon, double pRef);
+              double lx, double ly, double omega, double epsilon, double pRef, const MeshRange2d& range);
     ~Poisson2d() = default;
 
     int calculate(Field2d& p, const Field2d& s, int iteration);
@@ -19,4 +19,5 @@ private:
     const double OMEGA;
     const double EPSILON;
     const double P_REF;
+    const MeshRange2d MESH_RANGE;
 };

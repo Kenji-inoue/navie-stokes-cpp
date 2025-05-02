@@ -11,3 +11,10 @@ struct Velocity2d {
     Field2d u;
     Field2d v;
 };
+
+struct MeshRange2d {
+    int minX;
+    int maxX;
+    int minY;
+    int maxY;
+};

@@ -25,13 +25,14 @@ int main() {
     double omega = 1.4;
     double epsilon = 1e-7;
     double pRef = 1.0;
+    MeshRange2d range = {1, meshX - 2, 1, meshY - 2};
     Field2d s, p;
     FieldUtil::setSize(s, meshX, meshY);
     FieldUtil::setSize(p, meshX, meshY);
     initializeSourceTerm(s, meshX, meshY, lx, ly);
 
     try {
-        Poisson2d poisson(meshX, meshY, lx, ly, omega, epsilon, pRef);
+        Poisson2d poisson(meshX, meshY, lx, ly, omega, epsilon, pRef, range);
         const int interval = 10;
         const int maxIterations = 100;
         int iteration = 0;
