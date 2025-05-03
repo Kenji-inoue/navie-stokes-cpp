@@ -79,10 +79,17 @@ void NavieStokes2d::modifyPressure(Field2d& p, Field2d& dp) {
         dp[j][MESH_X - 2] = p[j][MESH_X - 3] - p[j][MESH_X - 2];
         p[j][MESH_X - 2] = p[j][MESH_X - 3];
     }
-    // Top and bottom edge
-    for (int i = MESH_RANGE.minX; i <= MESH_RANGE.maxX; i++) {
-        p[0][i] = p[1][i];
-        p[MESH_Y - 2][i] = p[MESH_Y - 3][i];
+
+    // Inflow Boundary Condition
+    for (int j = 0; j < MESH_Y; j++) {
+        m_p[j][0] = 0;
+        m_p[j][1] = 0;
+    }
+    for (int i = 0; i < MESH_X; i++) {
+        m_p[0][i] = 0;
+        m_p[1][i] = 0;
+        m_p[NY - 1][i] = 0;
+        m_p[NY - 2][i] = 0;
     }
 }   
 
