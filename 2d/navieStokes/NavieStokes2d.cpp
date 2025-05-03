@@ -4,24 +4,25 @@
 #include "FieldUtil.h"
 
 NavieStokes2d::NavieStokes2d(int meshX, int meshY, double reynolds, 
-                        double lx, double ly, double deltaT, Velocity2d f,
-                        double omega, double epsilon, double pRef,
-                        const MeshRange2d& range, Field2d& p, Field2d& s)
+                        double lx, double ly, double omega, double epsilon, double pRef,
+                        const MeshRange2d& range, AnalysisResult& result)
     : MESH_X(meshX), MESH_Y(meshY), REYNOLDS(reynolds),
-      DX(lx / (meshX - 1)), DY(ly / (meshY - 1)), DELTA_T(deltaT), m_f(f),
-      EPSILON(epsilon), P_REF(pRef), OMEGA(omega), MESH_RANGE(range), m_p(p), m_s(s),
-      burgers_(meshX, meshY, 1/reynolds, lx, ly, deltaT, f),
+      DX(lx / (meshX - 3)), DY(ly / (meshY - 1)), DELTA_T(0.2 * DX / 1.0),
+      EPSILON(epsilon), P_REF(pRef), OMEGA(omega), MESH_RANGE(range), m_result(result),
+      burgers_(meshX, meshY, reynolds, lx, ly, DELTA_T, result.f),
       poisson_(meshX, meshY, lx, ly, omega, epsilon, pRef, range)
 {
     m_dp.resize(MESH_Y, std::vector<Value>(MESH_X, 0.0));
 }
 
-void NavieStokes2d::caclulate() {
-    m_f = calculateProvisionalVelocity(m_f, m_p);
-    calculateDivergenceOfVelocity(m_s, m_f);
-    const auto interval = poisson_.calculate(m_dp, m_s, 99999);
-    modifyPressure(m_p, m_dp);
-    modifyVelocity(m_f, m_dp);
+AnalysisResult NavieStokes2d::calculate() {
+    m_result.f = calculateProvisionalVelocity(m_result.f, m_result.p);
+    calculateDivergenceOfVelocity(m_result.s, m_result.f);
+    const auto interval = poisson_.calculate(m_dp, m_result.s, 99999);
+    modifyPressure(m_result.p, m_dp);
+    modifyVelocity(m_result.f, m_dp);
+
+    return m_result;
 }
 
 Velocity2d NavieStokes2d::calculateProvisionalVelocity(const Velocity2d& f, const Field2d& p) {

@@ -3,17 +3,21 @@
 #include "Burgers2d.h"
 #include "Poisson2d.h"
 
+struct AnalysisResult {
+    Velocity2d f;
+    Field2d p;
+    Field2d s;
+};
+
 class NavieStokes2d
 {
 public:
-    NavieStokes2d(int meshX, int meshY, double reynolds, 
-                double lx, double ly, double deltaT, Velocity2d f,
+    NavieStokes2d(int meshX, int meshY, double reynolds, double lx, double ly,
                 double omega, double epsilon, double pRef,
-                const MeshRange2d& range, Field2d& p, Field2d& s);
+                const MeshRange2d& range, AnalysisResult& result);
     ~NavieStokes2d() = default;
-    void caclulate();
+    AnalysisResult calculate();
 
-    
 private:
     Velocity2d calculateProvisionalVelocity(const Velocity2d& f, const Field2d& p);
     Value calculatePressureTermX(const Field2d& p, int i, int j) const;
@@ -32,10 +36,8 @@ private:
     const double P_REF;
     const double OMEGA;
     const MeshRange2d MESH_RANGE;
-    Velocity2d m_f;
-    Field2d m_p;
+    AnalysisResult m_result;
     Field2d m_dp;
-    Field2d m_s;
     Burgers2d burgers_;
     Poisson2d poisson_;
 };
