@@ -1,28 +1,41 @@
 #pragma once
 #include "typedef.h"
-#include "Advection2d.h"
-#include "Diffusion2d.h"
+#include "Burgers2d.h"
+#include "Poisson2d.h"
 
 class NavieStokes2d
 {
 public:
     NavieStokes2d(int meshX, int meshY, double reynolds, 
-              double lx, double ly, double deltaT, Velocity2d f);
+                double lx, double ly, double deltaT, Velocity2d f,
+                double omega, double epsilon, double pRef,
+                const MeshRange2d& range, Field2d& p, Field2d& s);
     ~NavieStokes2d() = default;
+    void caclulate();
 
-    Velocity2d calculate();
-    Value calculateTerm(const Field2d& f, const Velocity2d& velocity, int i, int j) const;
-    void validateTime();
-    void updateBoundaryCondition(Field2d& f);
+    
 private:
-    void updateVelocity(Velocity2d& f);
+    Velocity2d calculateProvisionalVelocity(const Velocity2d& f, const Field2d& p);
+    Value calculatePressureTermX(const Field2d& p, int i, int j) const;
+    Value calculatePressureTermY(const Field2d& p, int i, int j) const;
+    void calculateDivergenceOfVelocity(Field2d& s, const Velocity2d& f);
+    void updateRunoffBoundaryCondition(Velocity2d& f);
+    void modifyPressure(Field2d& p, Field2d& dp);
+    void modifyVelocity(Velocity2d& f, const Field2d& dp);
     const int MESH_X;
     const int MESH_Y;
     const double REYNOLDS;
     const double DX;
     const double DY;
     const double DELTA_T;
+    const double EPSILON;
+    const double P_REF;
+    const double OMEGA;
+    const MeshRange2d MESH_RANGE;
     Velocity2d m_f;
-    Diffusion2d diffusion_;
-    Advection2d advection_;
+    Field2d m_p;
+    Field2d m_dp;
+    Field2d m_s;
+    Burgers2d burgers_;
+    Poisson2d poisson_;
 };
