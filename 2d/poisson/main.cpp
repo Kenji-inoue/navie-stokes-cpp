@@ -4,15 +4,13 @@
 #include <iostream>
 #include <math.h>
 
-void initializeSourceTerm(Field2d& s, int meshX, int meshY, double lx, double ly) {
+void initializeSourceTerm(Field2d& s, int meshX, int meshY, double dx, double dy) {
     const double PI=3.14159;
     const double K_X = 2 * PI;
     const double K_Y = 2 * PI;
-    const double DX = lx / (meshX - 1);
-    const double DY = ly / (meshY - 1);
     for (int j = 0; j < meshY; j++) {
         for (int i = 0; i < meshX; i++) {
-            s[j][i] = -1 * (K_X * K_X + K_Y * K_Y) * sin(K_X * i * DX) * sin(K_Y * j * DY);
+            s[j][i] = -1 * (K_X * K_X + K_Y * K_Y) * sin(K_X * i * dx) * sin(K_Y * j * dy);
         }
     }
 }
@@ -22,6 +20,8 @@ int main() {
     int meshY = meshX;
     double lx = 1.0;
     double ly = lx;
+    double dx = lx / (meshX - 1);
+    double dy = ly / (meshY - 1);
     double omega = 1.4;
     double epsilon = 1e-7;
     double pRef = 1.0;
@@ -29,17 +29,16 @@ int main() {
     Field2d s, p;
     FieldUtil::setSize(s, meshX, meshY);
     FieldUtil::setSize(p, meshX, meshY);
-    initializeSourceTerm(s, meshX, meshY, lx, ly);
+    initializeSourceTerm(s, meshX, meshY, dx, dy);
 
     try {
-        Poisson2d poisson(meshX, meshY, lx, ly, omega, epsilon, pRef, range);
-        const int interval = 10;
+        Poisson2d poisson(meshX, meshY, dx, dy, omega, epsilon, pRef, range);
+        const int interval = 1;
         const int maxIterations = 100;
-        int iteration = 0;
-        for (int time = 0; time < maxIterations; time++) {
-            FieldUtil::display(p, time, interval);
-            iteration = poisson.calculate(p, s, maxIterations);
-        }
+
+        int iteration = poisson.calculate(p, s, maxIterations);
+        FieldUtil::display(p, iteration, interval);
+
         printf("Iteration: %d\n", iteration);
     } catch (const std::runtime_error& e) {
         std::cerr << "Error: " << e.what() << std::endl;

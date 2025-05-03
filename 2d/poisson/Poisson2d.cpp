@@ -3,9 +3,9 @@
 #include "Poisson2d.h"
 #include "FieldUtil.h"
 
-Poisson2d::Poisson2d(int meshX, int meshY, double lx, double ly, 
+Poisson2d::Poisson2d(int meshX, int meshY, double dx, double dy, 
     double omega, double epsilon, double pRef, const MeshRange2d& range) 
-    : MESH_X(meshX), MESH_Y(meshY), DX(lx / (meshX - 1)), DY(ly / (meshY - 1)), 
+    : MESH_X(meshX), MESH_Y(meshY), DX(dx), DY(dy), 
     OMEGA(omega), EPSILON(epsilon), P_REF(pRef), MESH_RANGE(range) 
 {
     //do nothing

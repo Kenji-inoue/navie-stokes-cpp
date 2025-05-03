@@ -16,6 +16,8 @@ int main() {
     double reynolds = 200;
     double lx = 1.0;
     double ly = lx;
+    double dx = lx / (meshX - 3);
+    double dy = ly / (meshY - 3);
     AnalysisResult result;
     double omega = 1.0;
     double epsilon = 1e-7;
@@ -28,13 +30,13 @@ int main() {
     setInflowBoundaryCondition(result.f.u, meshX, meshY);
 
     try {
-        NavieStokes2d navieStokes(meshX, meshY, reynolds, lx, ly, 
+        NavieStokes2d navieStokes(meshX, meshY, reynolds, dx, dy, 
                                   omega, epsilon, pRef, range, result);
         const int interval = 1;
-        const int maxIterations = 10;
+        const int maxIterations = 2;
         for (int time = 0; time < maxIterations; time++) {
             FieldUtil::display(result.f.u, time, interval);
-            FieldUtil::display(result.f.u, time, interval);
+            FieldUtil::display(result.f.v, time, interval);
             FieldUtil::display(result.p, time, interval);
             FieldUtil::display(result.s, time, interval);
             result = navieStokes.calculate();

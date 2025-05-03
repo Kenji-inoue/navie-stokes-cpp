@@ -12,7 +12,7 @@ struct AnalysisResult {
 class NavieStokes2d
 {
 public:
-    NavieStokes2d(int meshX, int meshY, double reynolds, double lx, double ly,
+    NavieStokes2d(int meshX, int meshY, double reynolds, double dx, double dy,
                 double omega, double epsilon, double pRef,
                 const MeshRange2d& range, AnalysisResult& result);
     ~NavieStokes2d() = default;

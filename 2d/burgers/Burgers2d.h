@@ -7,7 +7,7 @@ class Burgers2d
 {
 public:
     Burgers2d(int meshX, int meshY, double reynolds, 
-              double lx, double ly, double deltaT, Velocity2d f);
+              double dx, double dy, double deltaT, Velocity2d f);
     ~Burgers2d() = default;
 
     Velocity2d calculate();

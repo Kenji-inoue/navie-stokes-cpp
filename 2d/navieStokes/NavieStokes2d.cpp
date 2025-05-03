@@ -4,13 +4,13 @@
 #include "FieldUtil.h"
 
 NavieStokes2d::NavieStokes2d(int meshX, int meshY, double reynolds, 
-                        double lx, double ly, double omega, double epsilon, double pRef,
+                        double dx, double dy, double omega, double epsilon, double pRef,
                         const MeshRange2d& range, AnalysisResult& result)
     : MESH_X(meshX), MESH_Y(meshY), REYNOLDS(reynolds),
-      DX(lx / (meshX - 3)), DY(ly / (meshY - 1)), DELTA_T(0.2 * DX / 1.0),
+      DX(dx), DY(dy), DELTA_T(0.2 * DX / 1.0),
       EPSILON(epsilon), P_REF(pRef), OMEGA(omega), MESH_RANGE(range), m_result(result),
-      burgers_(meshX, meshY, reynolds, lx, ly, DELTA_T, result.f),
-      poisson_(meshX, meshY, lx, ly, omega, epsilon, pRef, range)
+      burgers_(meshX, meshY, reynolds, dx, dy, DELTA_T, result.f),
+      poisson_(meshX, meshY, dx, dy, omega, epsilon, pRef, range)
 {
     m_dp.resize(MESH_Y, std::vector<Value>(MESH_X, 0.0));
 }

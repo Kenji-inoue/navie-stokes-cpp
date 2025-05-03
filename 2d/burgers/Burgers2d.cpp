@@ -4,9 +4,9 @@
 #include "FieldUtil.h"
 
 Burgers2d::Burgers2d(int meshX, int meshY, double reynolds, 
-                     double lx, double ly, double deltaT, Velocity2d f) 
+                     double dx, double dy, double deltaT, Velocity2d f) 
     : MESH_X(meshX), MESH_Y(meshY), REYNOLDS(reynolds), 
-      DX(lx / (meshX - 1)), DY(ly / (meshY - 1)), DELTA_T(deltaT), m_f(f),
+      DX(dx), DY(dy), DELTA_T(deltaT), m_f(f),
       diffusion_(meshX, meshY, 1/reynolds, DX, DY, deltaT), 
       advection_(meshX, meshY, DX, DY, deltaT)
 {

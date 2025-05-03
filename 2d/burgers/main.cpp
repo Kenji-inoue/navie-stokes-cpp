@@ -3,15 +3,13 @@
 #include <stdexcept>
 #include <iostream>
 
-void initializeVelocity(Velocity2d& f, int meshX, int meshY, double lx, double ly) {
+void initializeVelocity(Velocity2d& f, int meshX, int meshY, double dx, double dy) {
     const double PI=3.14159;
     const double K = 2 * PI;
-    const double DX = lx / (meshX - 1);
-    const double DY = ly / (meshY - 1);
     for (int j = 0; j < meshY; j++) {
         for (int i = 0; i < meshX; i++) {
-            const auto x = i * DX;
-            const auto y = j * DY;
+            const auto x = i * dx;
+            const auto y = j * dy;
             f.u[j][i] = -1 * cos(K * x) * sin(K * y);
             f.v[j][i] = sin(K * x) * cos(K * y);
         }
@@ -24,14 +22,16 @@ int main() {
     double reynolds = 200;
     double lx = 1.0;
     double ly = lx;
+    double dx = lx / (meshX - 1);
+    double dy = ly / (meshY - 1);
     double deltaT = 0.02; 
     Velocity2d f;
     FieldUtil::setSize(f.u, meshX, meshY);
     FieldUtil::setSize(f.v, meshX, meshY);
-    initializeVelocity(f, meshX, meshY, lx, ly);
+    initializeVelocity(f, meshX, meshY, dx, dy);
 
     try {
-        Burgers2d burgers(meshX, meshY, reynolds, lx, ly, deltaT, f);
+        Burgers2d burgers(meshX, meshY, reynolds, dx, dy, deltaT, f);
         const int interval = 1;
         const int maxIterations = 10;
         for (int time = 0; time < maxIterations; time++) {
