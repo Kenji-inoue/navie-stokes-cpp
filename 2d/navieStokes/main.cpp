@@ -17,7 +17,7 @@ int main() {
     double lx = 1.0;
     double ly = lx;
     double dx = lx / (meshX - 3);
-    double dy = ly / (meshY - 3);
+    double dy = dx;
     AnalysisResult result;
     double omega = 1.0;
     double epsilon = 1e-7;
