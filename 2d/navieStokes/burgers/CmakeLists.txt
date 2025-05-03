@@ -5,8 +5,8 @@ add_library(${PROJECT_NAME}Lib
 
 target_include_directories (${PROJECT_NAME}Lib PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Util
-    ${CMAKE_CURRENT_SOURCE_DIR}/../advection
-    ${CMAKE_CURRENT_SOURCE_DIR}/../diffusion
+    ${CMAKE_CURRENT_SOURCE_DIR}/advection
+    ${CMAKE_CURRENT_SOURCE_DIR}/diffusion
 )
 
 add_executable(${PROJECT_NAME}
@@ -14,8 +14,8 @@ add_executable(${PROJECT_NAME}
 
 target_include_directories (${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../Util
-    ${CMAKE_CURRENT_SOURCE_DIR}/../advection
-    ${CMAKE_CURRENT_SOURCE_DIR}/../diffusion
+    ${CMAKE_CURRENT_SOURCE_DIR}/advection
+    ${CMAKE_CURRENT_SOURCE_DIR}/diffusion
 )
 
 target_link_libraries(${PROJECT_NAME} Util Advection2dLib Diffusion2dLib ${PROJECT_NAME}Lib)
