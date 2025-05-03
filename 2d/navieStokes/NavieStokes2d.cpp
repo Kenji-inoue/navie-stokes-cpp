@@ -93,6 +93,7 @@ void NavieStokes2d::modifyVelocity(Velocity2d& f, const Field2d& dp) {
             f.v[j][i] = f.v[j][i] - DELTA_T / 2 * ((dp[j][i] - dp[j - 1][i]) / DY + (dp[j][i - 1] - dp[j - 1][i - 1]) / DY);
         }
     }
+    updateRunoffBoundaryCondition(f);
 }
 
 void NavieStokes2d::updateVelocityTimeScale() {
