@@ -1,7 +1,7 @@
 project(Advection2d LANGUAGES CXX C)
 
 include_directories(
-    ../../Util
+    ${CMAKE_SOURCE_DIR}/Util
 )
 add_library(${PROJECT_NAME}Lib
             Advection2d.cpp)

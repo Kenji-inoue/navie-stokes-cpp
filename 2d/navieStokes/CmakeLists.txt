@@ -4,7 +4,7 @@ add_executable(${PROJECT_NAME}
                 main.cpp 
                 NavieStokes2d.cpp)
 target_include_directories(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../Util
+    ${CMAKE_SOURCE_DIR}/Util
     ${CMAKE_CURRENT_SOURCE_DIR}/burgers
     ${CMAKE_CURRENT_SOURCE_DIR}/burgers/advection
     ${CMAKE_CURRENT_SOURCE_DIR}/burgers/diffusion

@@ -9,7 +9,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 #add_subdirectory(1d/advection)
 
 
-# add_subdirectory(2d/advectionDiffusion) # almost same as burgers equation
+# add_subdirectory(2d/advectionDiffusion) # almost same as burgers equation and cannot build this now
 add_subdirectory(2d/navieStokes)
 add_subdirectory(2d/navieStokes/poisson)
 add_subdirectory(2d/navieStokes/burgers)
