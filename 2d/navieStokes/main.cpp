@@ -1,5 +1,6 @@
 #include "NavieStokes2d.h"
 #include "FieldUtil.h"
+#include "FileUtil.h"
 #include <stdexcept>
 #include <iostream>
 
@@ -68,14 +69,12 @@ int main() {
     try {
         NavieStokes2d solver(meshX, meshY, reynolds, dx, dy, 
                                   omega, epsilon, pRef, range, result, object);
-        const int interval = 10;
-        const int maxIterations = 21;
-        for (int time = 0; time < maxIterations; time++) {
+        const int interval = 50;
+        const int maxIterations = 500;
+        FileUtil file("result.csv");
+        for (int time = 1; time <= maxIterations; time++) {
             result = solver.calculate();
-            if (time % interval == 0) {
-                printf("rot\n");
-                FieldUtil::display(result.rot, time, interval);
-            }
+            file.save(result.rot, "rot", time, interval);
         }
     } catch (const std::runtime_error& e) {
         std::cerr << "Error: " << e.what() << std::endl;

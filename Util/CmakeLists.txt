@@ -1,4 +1,5 @@
 project(Util LANGUAGES CXX C)
 
 add_library(${PROJECT_NAME}
-                FieldUtil.cpp)
+                FieldUtil.cpp
+                FileUtil.cpp)
