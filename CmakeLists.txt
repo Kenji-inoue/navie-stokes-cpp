@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
-project(navieStokes LANGUAGES CXX C)
+project(navierStokes LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -10,9 +10,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
 # add_subdirectory(2d/advectionDiffusion) # almost same as burgers equation and cannot build this now
-add_subdirectory(2d/navieStokes)
-add_subdirectory(2d/navieStokes/poisson)
-add_subdirectory(2d/navieStokes/burgers)
-add_subdirectory(2d/navieStokes/burgers/diffusion)
-add_subdirectory(2d/navieStokes/burgers/advection)
-add_subdirectory(Util)
+add_subdirectory(2d/navierStokes)
+add_subdirectory(2d/navierStokes/poisson)
+add_subdirectory(2d/navierStokes/burgers)
+add_subdirectory(2d/navierStokes/burgers/diffusion)
+add_subdirectory(2d/navierStokes/burgers/advection)
+add_subdirectory(Util)E:\Programming\C++\navie-stokes\build\2d\navierStokes\Release\NavierStokes2dwithoutObject.exe

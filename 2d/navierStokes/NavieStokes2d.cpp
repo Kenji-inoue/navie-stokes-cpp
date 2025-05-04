@@ -1,9 +1,9 @@
 #include <string>
 #include <stdexcept>
-#include "NavieStokes2d.h"
+#include "NavierStokes2d.h"
 #include "FieldUtil.h"
 
-NavieStokes2d::NavieStokes2d(int meshX, int meshY, double reynolds, 
+NavierStokes2d::NavierStokes2d(int meshX, int meshY, double reynolds, 
                         double dx, double dy, double dt, double omega, double epsilon, double pRef, int poissonIteration,
                         const MeshRange2d& range, AnalysisResult& result, const Object& object)
     : MESH_X(meshX), MESH_Y(meshY), REYNOLDS(reynolds),
@@ -16,7 +16,7 @@ NavieStokes2d::NavieStokes2d(int meshX, int meshY, double reynolds,
     m_dp.resize(MESH_Y, std::vector<Value>(MESH_X, 0.0));
 }
 
-AnalysisResult NavieStokes2d::calculate() {
+AnalysisResult NavierStokes2d::calculate() {
     calculateProvisionalVelocity(m_fNext, m_result.f, m_result.p);
     calculateDivergenceOfVelocity(m_result.s, m_fNext);
     const auto interval = poisson_.calculate(m_dp, m_result.s, m_object.ip, POISSON_ITERATION);
@@ -29,7 +29,7 @@ AnalysisResult NavieStokes2d::calculate() {
     return m_result;
 }
 
-void NavieStokes2d::calculateProvisionalVelocity(Velocity2d& fNext, const Velocity2d& f, const Field2d& p) {
+void NavierStokes2d::calculateProvisionalVelocity(Velocity2d& fNext, const Velocity2d& f, const Field2d& p) {
     for (int j = MESH_RANGE.minY+1; j <= MESH_RANGE.maxY; j++) {
         for (int i = MESH_RANGE.minX+1; i <= MESH_RANGE.maxX; i++) {
             if (m_object.iu[j][i] != ObjectFlag::fluid) {
@@ -43,19 +43,19 @@ void NavieStokes2d::calculateProvisionalVelocity(Velocity2d& fNext, const Veloci
     updateRunoffBoundaryCondition(fNext);
 }
 
-Value NavieStokes2d::calculatePressureTermX(const Field2d& p, int i, int j) const {
+Value NavierStokes2d::calculatePressureTermX(const Field2d& p, int i, int j) const {
     const Value frontPressure = (p[j][i] + p[j - 1][i]) / 2;
     const Value backPressure = (p[j][i - 1] + p[j - 1][i - 1]) / 2;
     return DT * (frontPressure - backPressure) / DX;
 }
 
-Value NavieStokes2d::calculatePressureTermY(const Field2d& p, int i, int j) const {
+Value NavierStokes2d::calculatePressureTermY(const Field2d& p, int i, int j) const {
     const Value frontPressure = (p[j][i] + p[j][i - 1]) / 2;
     const Value backPressure = (p[j - 1][i] + p[j - 1][i - 1]) / 2;
     return DT * (frontPressure - backPressure) / DY;
 }
 
-void NavieStokes2d::calculateDivergenceOfVelocity(Field2d& s, const Velocity2d& f) {
+void NavierStokes2d::calculateDivergenceOfVelocity(Field2d& s, const Velocity2d& f) {
     for (int j = MESH_RANGE.minY; j <= MESH_RANGE.maxY; j++) {
         for (int i = MESH_RANGE.minX; i <= MESH_RANGE.maxX; i++) {
             if (m_object.ip[j][i] != ObjectFlag::fluid) {
@@ -68,7 +68,7 @@ void NavieStokes2d::calculateDivergenceOfVelocity(Field2d& s, const Velocity2d& 
     }
 }
 
-void NavieStokes2d::updateRunoffBoundaryCondition(Velocity2d& f) {
+void NavierStokes2d::updateRunoffBoundaryCondition(Velocity2d& f) {
     for (int j = MESH_RANGE.minY+1; j <= MESH_RANGE.maxY; j++) {
         f.u[j][MESH_X - 2] = f.u[j][MESH_X - 3];
         f.u[j][MESH_X - 1] = f.u[j][MESH_X - 3];
@@ -77,7 +77,7 @@ void NavieStokes2d::updateRunoffBoundaryCondition(Velocity2d& f) {
     }
 }
 
-void NavieStokes2d::modifyPressure(Field2d& p, Field2d& dp) {
+void NavierStokes2d::modifyPressure(Field2d& p, Field2d& dp) {
     for (int j = 0; j < MESH_Y; j++) {
         for (int i = 0; i < MESH_X; i++) {
             if (m_object.ip[j][i] != ObjectFlag::fluid) {
@@ -107,7 +107,7 @@ void NavieStokes2d::modifyPressure(Field2d& p, Field2d& dp) {
     }
 }   
 
-void NavieStokes2d::modifyVelocity(Velocity2d& f, const Field2d& dp) {
+void NavierStokes2d::modifyVelocity(Velocity2d& f, const Field2d& dp) {
     for (int j = MESH_RANGE.minY+1; j <= MESH_RANGE.maxY; j++) {
         for (int i = MESH_RANGE.minX+1; i <= MESH_RANGE.maxX; i++) {
             if (m_object.iu[j][i] != ObjectFlag::fluid) {
@@ -121,7 +121,7 @@ void NavieStokes2d::modifyVelocity(Velocity2d& f, const Field2d& dp) {
     updateRunoffBoundaryCondition(f);
 }
 
-void NavieStokes2d::calculateVorticity(Field2d& rot, const Velocity2d& f) {
+void NavierStokes2d::calculateVorticity(Field2d& rot, const Velocity2d& f) {
     for (int j = MESH_RANGE.minY; j <= MESH_RANGE.maxY; j++) {
         for (int i = MESH_RANGE.minX; i <= MESH_RANGE.maxX; i++) {
             if (m_object.ip[j][i] != ObjectFlag::fluid) {
@@ -134,7 +134,7 @@ void NavieStokes2d::calculateVorticity(Field2d& rot, const Velocity2d& f) {
     }
 }
 
-void NavieStokes2d::calculateDragForce(DragForce& drag, const Velocity2d& f, const Field2d& p) {
+void NavierStokes2d::calculateDragForce(DragForce& drag, const Velocity2d& f, const Field2d& p) {
     drag.x = 0.0;
     drag.y = 0.0;
     for (int j = MESH_RANGE.minY; j <= MESH_RANGE.maxY; j++) {
@@ -174,6 +174,6 @@ void NavieStokes2d::calculateDragForce(DragForce& drag, const Velocity2d& f, con
     }
 }
 
-void NavieStokes2d::updateVelocityTimeScale() {
+void NavierStokes2d::updateVelocityTimeScale() {
     std::swap(m_result.f, m_fNext);
 }

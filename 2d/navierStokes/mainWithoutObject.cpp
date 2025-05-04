@@ -1,4 +1,4 @@
-#include "NavieStokes2d.h"
+#include "NavierStokes2d.h"
 #include "FieldUtil.h"
 #include <stdexcept>
 #include <iostream>
@@ -42,7 +42,7 @@ int main() {
     defineObject(object, meshX, meshY);
 
     try {
-        NavieStokes2d solver(meshX, meshY, reynolds, dx, dy, dt,
+        NavierStokes2d solver(meshX, meshY, reynolds, dx, dy, dt,
                             omega, epsilon, pRef, poissonIteration, 
                             range, result, object);
         const int interval = 1;
