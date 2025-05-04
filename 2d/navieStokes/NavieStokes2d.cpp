@@ -82,14 +82,14 @@ void NavieStokes2d::modifyPressure(Field2d& p, Field2d& dp) {
 
     // Inflow Boundary Condition
     for (int j = 0; j < MESH_Y; j++) {
-        m_p[j][0] = 0;
-        m_p[j][1] = 0;
+        p[j][0] = 0;
+        p[j][1] = 0;
     }
     for (int i = 0; i < MESH_X; i++) {
-        m_p[0][i] = 0;
-        m_p[1][i] = 0;
-        m_p[NY - 1][i] = 0;
-        m_p[NY - 2][i] = 0;
+        p[0][i] = 0;
+        p[1][i] = 0;
+        p[MESH_Y - 1][i] = 0;
+        p[MESH_Y - 2][i] = 0;
     }
 }   
 
