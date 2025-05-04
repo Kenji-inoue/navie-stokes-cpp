@@ -34,6 +34,7 @@ private:
     void modifyPressure(Field2d& p, Field2d& dp);
     void modifyVelocity(Velocity2d& f, const Field2d& dp);
     void calculateVorticity(Field2d& rot, const Velocity2d& f);
+    void calculateDragForce(DragForce& drag, const Velocity2d& f, const Field2d& p);
     void updateVelocityTimeScale();
     const int MESH_X;
     const int MESH_Y;

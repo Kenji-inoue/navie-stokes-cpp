@@ -23,6 +23,7 @@ AnalysisResult NavieStokes2d::calculate() {
     modifyPressure(m_result.p, m_dp);
     modifyVelocity(m_fNext, m_dp);
     calculateVorticity(m_result.rot, m_fNext);
+    calculateDragForce(m_result.drag, m_fNext, m_result.p);
 
     updateVelocityTimeScale();
     return m_result;
@@ -129,6 +130,46 @@ void NavieStokes2d::calculateVorticity(Field2d& rot, const Velocity2d& f) {
 
             rot[j][i] = ((f.v[j + 1][i + 1] - f.v[j + 1][i] + f.v[j][i + 1] - f.v[j][i]) / DX -
                          (f.u[j + 1][i + 1] - f.u[j][i + 1] + f.u[j + 1][i] - f.u[j][i]) / DY) / 2;
+        }
+    }
+}
+
+void NavieStokes2d::calculateDragForce(DragForce& drag, const Velocity2d& f, const Field2d& p) {
+    drag.x = 0.0;
+    drag.y = 0.0;
+    for (int j = MESH_RANGE.minY; j <= MESH_RANGE.maxY; j++) {
+        for (int i = MESH_RANGE.minX; i <= MESH_RANGE.maxX; i++) {
+            if (m_object.ip[j][i] != ObjectFlag::fluid) {
+                continue;
+            }
+
+            const auto dudx = (f.u[j + 1][i + 1] - f.u[j + 1][i] + f.u[j][i + 1] - f.u[j][i]) / 2.0 / DX;
+            const auto dudy = (f.u[j + 1][i + 1] + f.u[j + 1][i] - f.u[j][i + 1] - f.u[j][i]) / 2.0 / DY;
+            const auto dvdx = (f.v[j + 1][i + 1] - f.v[j + 1][i] + f.v[j][i + 1] - f.v[j][i]) / 2.0 / DX;
+            const auto dvdy = (f.v[j + 1][i + 1] + f.v[j + 1][i] - f.v[j][i + 1] - f.v[j][i]) / 2.0 / DY;
+
+            const auto sigmaX = -p[j][i] + 4.0 / 3.0 * dudx / REYNOLDS - 2.0 / 3.0 * dvdy / REYNOLDS;
+            const auto tauX = (dvdx + dudy) / REYNOLDS;
+            const auto sigmaY = -p[j][i] + 4.0 / 3.0 * dvdy / REYNOLDS - 2.0 / 3.0 * dudx / REYNOLDS;
+            const auto tauY = tauX;
+
+            if (m_object.ip[j][i + 1] == ObjectFlag::surface) {
+                drag.x -= sigmaX * DY;
+                drag.y -= tauX * DY;
+            }
+            else if (m_object.ip[j][i - 1] == ObjectFlag::surface) {
+                drag.x += sigmaX * DY;
+                drag.y += tauX * DY;
+            }
+
+            if (m_object.ip[j + 1][i] == ObjectFlag::surface) {
+                drag.x -= tauY * DX;
+                drag.y -= sigmaY * DX;
+            }
+            else if (m_object.ip[j - 1][i] == ObjectFlag::surface) {
+                drag.x += tauY * DX;
+                drag.y += sigmaY * DX;
+            }
         }
     }
 }

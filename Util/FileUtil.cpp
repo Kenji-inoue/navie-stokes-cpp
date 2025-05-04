@@ -11,7 +11,7 @@ FileUtil::~FileUtil() {
     }
 }
 
-void FileUtil::save(const Field2d& f, const char* title, int time, int interval) {
+void FileUtil::saveField(const Field2d& f, const char* title, int time, int interval) {
     if (time % interval != 0) {
         return;
     }

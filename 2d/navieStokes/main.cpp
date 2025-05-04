@@ -62,6 +62,8 @@ int main() {
     FieldUtil::InitializeField(result.s, meshX, meshY, 0);
     FieldUtil::InitializeField(result.rot, meshX, meshY, 0);
     setInflowBoundaryCondition(result.f, meshX, meshY);
+    result.drag.x = 0.0;
+    result.drag.y = 0.0;
 
     Object object;
     defineObject(object, meshX, meshY);
@@ -74,7 +76,13 @@ int main() {
         FileUtil file("result.csv");
         for (int time = 1; time <= maxIterations; time++) {
             result = solver.calculate();
-            file.save(result.rot, "rot", time, interval);
+
+            if (time % interval != 0) {
+                continue;
+            }
+
+            file.saveField(result.rot, "rot", time, interval);
+            printf("dragX = %6.3f, dragY = %6.3f\n", result.drag.x, result.drag.y);
         }
     } catch (const std::runtime_error& e) {
         std::cerr << "Error: " << e.what() << std::endl;
