@@ -35,8 +35,8 @@ void NavieStokes2d::calculateProvisionalVelocity(Velocity2d& fNext, const Veloci
                 continue;
             }
 
-            fNext.u[j][i] = f.u[j][i] + burgers_.calculateTerm(f.u, f, i, j) + calculatePressureTermX(p, i, j);
-            fNext.v[j][i] = f.v[j][i] + burgers_.calculateTerm(f.v, f, i, j) + calculatePressureTermY(p, i, j);
+            fNext.u[j][i] = f.u[j][i] + burgers_.calculateTerm(f.u, f, i, j) - calculatePressureTermX(p, i, j);
+            fNext.v[j][i] = f.v[j][i] + burgers_.calculateTerm(f.v, f, i, j) - calculatePressureTermY(p, i, j);
         }
     }
     updateRunoffBoundaryCondition(fNext);

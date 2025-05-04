@@ -48,19 +48,18 @@ int main() {
     int meshX = 128 + 3;
     int meshY = 64 + 3;
     double reynolds = 200;
-    double lx = 16.0;
-    double dx = lx / (meshX - 3);
+    double dx = 16.0 / (Value)(meshX - 3);
     double dy = dx;
     AnalysisResult result;
     double omega = 1.0;
     double epsilon = 1e-7;
     double pRef = 1.0;
     MeshRange2d range = {1, meshX - 3, 1, meshY - 3};
-    FieldUtil::setSize(result.f.u, meshX, meshY);
-    FieldUtil::setSize(result.f.v, meshX, meshY);
-    FieldUtil::setSize(result.p, meshX, meshY);
-    FieldUtil::setSize(result.s, meshX, meshY);
-    FieldUtil::setSize(result.rot, meshX, meshY);
+    FieldUtil::InitializeField(result.f.u, meshX, meshY, 0);
+    FieldUtil::InitializeField(result.f.v, meshX, meshY, 0);
+    FieldUtil::InitializeField(result.p, meshX, meshY, 0);
+    FieldUtil::InitializeField(result.s, meshX, meshY, 0);
+    FieldUtil::InitializeField(result.rot, meshX, meshY, 0);
     setInflowBoundaryCondition(result.f, meshX, meshY);
 
     Object object;
@@ -69,11 +68,14 @@ int main() {
     try {
         NavieStokes2d solver(meshX, meshY, reynolds, dx, dy, 
                                   omega, epsilon, pRef, range, result, object);
-        const int interval = 50;
-        const int maxIterations = 500;
+        const int interval = 10;
+        const int maxIterations = 21;
         for (int time = 0; time < maxIterations; time++) {
-            FieldUtil::display(result.rot, time, interval);
             result = solver.calculate();
+            if (time % interval == 0) {
+                printf("rot\n");
+                FieldUtil::display(result.rot, time, interval);
+            }
         }
     } catch (const std::runtime_error& e) {
         std::cerr << "Error: " << e.what() << std::endl;

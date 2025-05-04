@@ -45,6 +45,14 @@ void FieldUtil::ClearField(Field2d& f) {
     SetField(f, 0.0);
 }
 
+void FieldUtil::InitializeField(Field2d& f, int x, int y, Value value) {
+    f.resize(y);
+    for (auto& row : f) {
+        row.resize(x);
+    }
+    SetField(f, value);
+}
+
 Value FieldUtil::findMax(Field2d& f) {
     Value maxElement = std::numeric_limits<Value>::lowest();
     for (const auto& row : f) {
