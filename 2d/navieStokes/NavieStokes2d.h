@@ -20,7 +20,7 @@ class NavieStokes2d
 {
 public:
     NavieStokes2d(int meshX, int meshY, double reynolds, double dx, double dy, double dt,
-                double omega, double epsilon, double pRef,
+                double omega, double epsilon, double pRef, int poissonIteration,
                 const MeshRange2d& range, AnalysisResult& result, const Object& object);
     ~NavieStokes2d() = default;
     AnalysisResult calculate();
@@ -45,6 +45,7 @@ private:
     const double EPSILON;
     const double P_REF;
     const double OMEGA;
+    const int POISSON_ITERATION;
     const MeshRange2d MESH_RANGE;
     AnalysisResult m_result;
     Velocity2d m_fNext;

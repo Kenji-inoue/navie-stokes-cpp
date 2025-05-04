@@ -56,6 +56,7 @@ int main() {
     double omega = 1.0;
     double epsilon = 1e-7;
     double pRef = 1.0;
+    int poissonIteration = 99999;
     MeshRange2d range = {1, meshX - 3, 1, meshY - 3};
     FieldUtil::InitializeField(result.f.u, meshX, meshY, 0);
     FieldUtil::InitializeField(result.f.v, meshX, meshY, 0);
@@ -71,7 +72,8 @@ int main() {
 
     try {
         NavieStokes2d solver(meshX, meshY, reynolds, dx, dy, dt,
-                             omega, epsilon, pRef, range, result, object);
+                             omega, epsilon, pRef, poissonIteration, 
+                             range, result, object);
         const int interval = 50;
         const int maxIterations = 500;
         FileUtil file("result.csv");

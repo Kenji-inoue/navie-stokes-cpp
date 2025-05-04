@@ -4,11 +4,11 @@
 #include "FieldUtil.h"
 
 NavieStokes2d::NavieStokes2d(int meshX, int meshY, double reynolds, 
-                        double dx, double dy, double dt, double omega, double epsilon, double pRef,
+                        double dx, double dy, double dt, double omega, double epsilon, double pRef, int poissonIteration,
                         const MeshRange2d& range, AnalysisResult& result, const Object& object)
     : MESH_X(meshX), MESH_Y(meshY), REYNOLDS(reynolds),
       DX(dx), DY(dy), DT(dt),
-      EPSILON(epsilon), P_REF(pRef), OMEGA(omega), MESH_RANGE(range), m_result(result),
+      EPSILON(epsilon), P_REF(pRef), OMEGA(omega), POISSON_ITERATION(poissonIteration), MESH_RANGE(range), m_result(result),
       burgers_(meshX, meshY, reynolds, dx, dy, DT, result.f),
       poisson_(meshX, meshY, dx, dy, omega, epsilon, pRef, range),
       m_fNext(result.f), m_object(object)
@@ -19,7 +19,7 @@ NavieStokes2d::NavieStokes2d(int meshX, int meshY, double reynolds,
 AnalysisResult NavieStokes2d::calculate() {
     calculateProvisionalVelocity(m_fNext, m_result.f, m_result.p);
     calculateDivergenceOfVelocity(m_result.s, m_fNext);
-    const auto interval = poisson_.calculate(m_dp, m_result.s, m_object.ip, 99999);
+    const auto interval = poisson_.calculate(m_dp, m_result.s, m_object.ip, POISSON_ITERATION);
     modifyPressure(m_result.p, m_dp);
     modifyVelocity(m_fNext, m_dp);
     calculateVorticity(m_result.rot, m_fNext);
