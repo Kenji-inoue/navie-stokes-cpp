@@ -5,13 +5,13 @@
 
 NavieStokes2d::NavieStokes2d(int meshX, int meshY, double reynolds, 
                         double dx, double dy, double omega, double epsilon, double pRef,
-                        const MeshRange2d& range, AnalysisResult& result)
+                        const MeshRange2d& range, AnalysisResult& result, const Object& object)
     : MESH_X(meshX), MESH_Y(meshY), REYNOLDS(reynolds),
-      DX(dx), DY(dy), DELTA_T(0.2 * DX / 1.0),
+      DX(dx), DY(dy), DELTA_T(0.5 * DX / 4.0),
       EPSILON(epsilon), P_REF(pRef), OMEGA(omega), MESH_RANGE(range), m_result(result),
       burgers_(meshX, meshY, reynolds, dx, dy, DELTA_T, result.f),
       poisson_(meshX, meshY, dx, dy, omega, epsilon, pRef, range),
-      m_fNext(result.f)
+      m_fNext(result.f), m_object(object)
 {
     m_dp.resize(MESH_Y, std::vector<Value>(MESH_X, 0.0));
 }
@@ -19,7 +19,7 @@ NavieStokes2d::NavieStokes2d(int meshX, int meshY, double reynolds,
 AnalysisResult NavieStokes2d::calculate() {
     calculateProvisionalVelocity(m_fNext, m_result.f, m_result.p);
     calculateDivergenceOfVelocity(m_result.s, m_fNext);
-    const auto interval = poisson_.calculate(m_dp, m_result.s, 99999);
+    const auto interval = poisson_.calculate(m_dp, m_result.s, m_object.ip, 99999);
     modifyPressure(m_result.p, m_dp);
     modifyVelocity(m_fNext, m_dp);
     calculateVorticity(m_result.rot, m_fNext);
@@ -31,6 +31,10 @@ AnalysisResult NavieStokes2d::calculate() {
 void NavieStokes2d::calculateProvisionalVelocity(Velocity2d& fNext, const Velocity2d& f, const Field2d& p) {
     for (int j = MESH_RANGE.minY+1; j <= MESH_RANGE.maxY; j++) {
         for (int i = MESH_RANGE.minX+1; i <= MESH_RANGE.maxX; i++) {
+            if (m_object.iu[j][i] != ObjectFlag::fluid) {
+                continue;
+            }
+
             fNext.u[j][i] = f.u[j][i] + burgers_.calculateTerm(f.u, f, i, j) + calculatePressureTermX(p, i, j);
             fNext.v[j][i] = f.v[j][i] + burgers_.calculateTerm(f.v, f, i, j) + calculatePressureTermY(p, i, j);
         }
@@ -53,6 +57,10 @@ Value NavieStokes2d::calculatePressureTermY(const Field2d& p, int i, int j) cons
 void NavieStokes2d::calculateDivergenceOfVelocity(Field2d& s, const Velocity2d& f) {
     for (int j = MESH_RANGE.minY; j <= MESH_RANGE.maxY; j++) {
         for (int i = MESH_RANGE.minX; i <= MESH_RANGE.maxX; i++) {
+            if (m_object.ip[j][i] != ObjectFlag::fluid) {
+                continue;
+            }
+
             s[j][i] = (((f.u[j + 1][i + 1] - f.u[j + 1][i]) / DX + (f.u[j][i + 1] - f.u[j][i]) / DX) / 2 +
                       ((f.v[j + 1][i + 1] - f.v[j][i + 1]) / DY + (f.v[j + 1][i] - f.v[j][i]) / DY) / 2) / DELTA_T;
         }
@@ -71,6 +79,10 @@ void NavieStokes2d::updateRunoffBoundaryCondition(Velocity2d& f) {
 void NavieStokes2d::modifyPressure(Field2d& p, Field2d& dp) {
     for (int j = 0; j < MESH_Y; j++) {
         for (int i = 0; i < MESH_X; i++) {
+            if (m_object.ip[j][i] != ObjectFlag::fluid) {
+                continue;
+            }
+
             p[j][i] += dp[j][i];
         }
     }
@@ -97,6 +109,10 @@ void NavieStokes2d::modifyPressure(Field2d& p, Field2d& dp) {
 void NavieStokes2d::modifyVelocity(Velocity2d& f, const Field2d& dp) {
     for (int j = MESH_RANGE.minY+1; j <= MESH_RANGE.maxY; j++) {
         for (int i = MESH_RANGE.minX+1; i <= MESH_RANGE.maxX; i++) {
+            if (m_object.iu[j][i] != ObjectFlag::fluid) {
+                continue;
+            }
+
             f.u[j][i] = f.u[j][i] - DELTA_T / 2 * ((dp[j][i] - dp[j][i - 1]) / DX + (dp[j - 1][i] - dp[j - 1][i - 1]) / DX);
             f.v[j][i] = f.v[j][i] - DELTA_T / 2 * ((dp[j][i] - dp[j - 1][i]) / DY + (dp[j][i - 1] - dp[j - 1][i - 1]) / DY);
         }
@@ -107,6 +123,10 @@ void NavieStokes2d::modifyVelocity(Velocity2d& f, const Field2d& dp) {
 void NavieStokes2d::calculateVorticity(Field2d& rot, const Velocity2d& f) {
     for (int j = MESH_RANGE.minY; j <= MESH_RANGE.maxY; j++) {
         for (int i = MESH_RANGE.minX; i <= MESH_RANGE.maxX; i++) {
+            if (m_object.ip[j][i] != ObjectFlag::fluid) {
+                continue;
+            }
+
             rot[j][i] = ((f.v[j + 1][i + 1] - f.v[j + 1][i] + f.v[j][i + 1] - f.v[j][i]) / DX -
                          (f.u[j + 1][i + 1] - f.u[j][i + 1] + f.u[j + 1][i] - f.u[j][i]) / DY) / 2;
         }

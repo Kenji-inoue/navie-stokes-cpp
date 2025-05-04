@@ -21,7 +21,7 @@ class NavieStokes2d
 public:
     NavieStokes2d(int meshX, int meshY, double reynolds, double dx, double dy,
                 double omega, double epsilon, double pRef,
-                const MeshRange2d& range, AnalysisResult& result);
+                const MeshRange2d& range, AnalysisResult& result, const Object& object);
     ~NavieStokes2d() = default;
     AnalysisResult calculate();
 
@@ -50,4 +50,5 @@ private:
     Field2d m_dp;
     Burgers2d burgers_;
     Poisson2d poisson_;
+    Object m_object;
 };

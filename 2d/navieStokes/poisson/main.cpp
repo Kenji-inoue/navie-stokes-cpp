@@ -36,7 +36,10 @@ int main() {
         const int interval = 1;
         const int maxIterations = 100;
 
-        int iteration = poisson.calculate(p, s, maxIterations);
+        FlagField ip;
+        FieldUtil::InitializeFlagField(ip, meshX, meshY, ObjectFlag::fluid);
+
+        int iteration = poisson.calculate(p, s, ip, maxIterations);
         FieldUtil::display(p, iteration, interval);
 
         printf("Iteration: %d\n", iteration);

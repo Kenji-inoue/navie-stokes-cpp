@@ -53,3 +53,21 @@ Value FieldUtil::findMax(Field2d& f) {
     }
     return maxElement;
 }
+
+void FieldUtil::ClearFlagField(FlagField& f) {
+    FieldUtil::SetFlagField(f, ObjectFlag::fluid);
+}
+
+void FieldUtil::SetFlagField(FlagField& f, ObjectFlag value) {
+    for (auto& row : f) {
+        std::fill(row.begin(), row.end(), value);
+    }
+}
+
+void FieldUtil::InitializeFlagField(FlagField& f, int x, int y, ObjectFlag value) {
+    f.resize(y);
+    for (auto& row : f) {
+        row.resize(x);
+    }
+    FieldUtil::SetFlagField(f, value);
+}
