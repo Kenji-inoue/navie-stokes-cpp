@@ -18,3 +18,8 @@ struct MeshRange2d {
     int minY;
     int maxY;
 };
+
+struct Object {
+    FlagField iu;
+    FlagField ip;
+};

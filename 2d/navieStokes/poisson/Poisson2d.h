@@ -8,9 +8,8 @@ public:
               double dx, double dy, double omega, double epsilon, double pRef, const MeshRange2d& range);
     ~Poisson2d() = default;
 
-    int calculate(Field2d& p, const Field2d& s, int iteration);
-
-    Value calculateTerm(Field2d& p, const Field2d& s) const;
+    int calculate(Field2d& p, const Field2d& s, const FlagField& ip, int iteration);
+    Value calculateTerm(Field2d& p, const Field2d& s, const FlagField& ip) const;
 private:
     const int MESH_X;
     const int MESH_Y;

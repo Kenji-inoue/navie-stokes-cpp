@@ -12,10 +12,10 @@ Poisson2d::Poisson2d(int meshX, int meshY, double dx, double dy,
 }
 
 
-int Poisson2d::calculate(Field2d& p, const Field2d& s, int iteration) {
+int Poisson2d::calculate(Field2d& p, const Field2d& s, const FlagField& ip, int iteration) {
     FieldUtil::ClearField(p);
     for (int time = 1; time <= iteration; time++) {
-        const auto residual = calculateTerm(p, s);
+        const auto residual = calculateTerm(p, s, ip);
         if (residual < EPSILON ){
             return time;
         }
@@ -24,10 +24,14 @@ int Poisson2d::calculate(Field2d& p, const Field2d& s, int iteration) {
     return iteration;
 }
 
-Value Poisson2d::calculateTerm(Field2d& p, const Field2d& s) const {
+Value Poisson2d::calculateTerm(Field2d& p, const Field2d& s, const FlagField& ip) const {
     Value maxResidual = 0;
     for (int j = MESH_RANGE.minY; j <= MESH_RANGE.maxY; j++) {
         for (int i = MESH_RANGE.minX; i <= MESH_RANGE.maxX; i++) {
+            if (ip[j][i] != ObjectFlag::fluid) {
+                continue;
+            }
+
             const auto p_n = (1 - OMEGA) * p[j][i] + OMEGA * 
             ((p[j][i + 1] + p[j][i - 1]) / DX / DX + (p[j + 1][i] + p[j - 1][i]) / DY / DY - s[j][i]) *
             DX * DX * DY * DY / (2 * (DX * DX + DY * DY));
