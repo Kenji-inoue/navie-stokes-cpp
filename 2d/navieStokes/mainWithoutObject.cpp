@@ -10,36 +10,57 @@ void setInflowBoundaryCondition(Field2d& f, int meshX, int meshY) {
     }
 }
 
+void defineObject(Object& object, int meshX, int meshY) {
+    FieldUtil::InitializeFlagField(object.iu, meshX, meshY, ObjectFlag::fluid);
+    FieldUtil::InitializeFlagField(object.ip, meshX, meshY, ObjectFlag::fluid);
+}
+
 int main() {
     int meshX = 16 + 3;
     int meshY = 8 + 3;
     double reynolds = 200;
-    double lx = 1.0;
-    double ly = lx;
-    double dx = lx / (meshX - 3);
+    double dx = 1.0 / (meshX - 3);
     double dy = dx;
+    double dt = 0.2 * dx / 1.0;
     AnalysisResult result;
     double omega = 1.0;
     double epsilon = 1e-7;
     double pRef = 1.0;
+    int poissonIteration = 99999;
     MeshRange2d range = {1, meshX - 3, 1, meshY - 3};
-    FieldUtil::setSize(result.f.u, meshX, meshY);
-    FieldUtil::setSize(result.f.v, meshX, meshY);
-    FieldUtil::setSize(result.p, meshX, meshY);
-    FieldUtil::setSize(result.s, meshX, meshY);
+    FieldUtil::InitializeField(result.f.u, meshX, meshY, 0);
+    FieldUtil::InitializeField(result.f.v, meshX, meshY, 0);
+    FieldUtil::InitializeField(result.p, meshX, meshY, 0);
+    FieldUtil::InitializeField(result.s, meshX, meshY, 0);
     setInflowBoundaryCondition(result.f.u, meshX, meshY);
 
+    FieldUtil::InitializeField(result.rot, meshX, meshY, 0);
+    result.drag.x = 0.0;
+    result.drag.y = 0.0;
+
+    Object object;
+    defineObject(object, meshX, meshY);
+
     try {
-        NavieStokes2d navieStokes(meshX, meshY, reynolds, dx, dy, 
-                                  omega, epsilon, pRef, range, result);
+        NavieStokes2d solver(meshX, meshY, reynolds, dx, dy, dt,
+                            omega, epsilon, pRef, poissonIteration, 
+                            range, result, object);
         const int interval = 1;
         const int maxIterations = 2;
         for (int time = 0; time < maxIterations; time++) {
+            printf("Iteration: %d\n", time);
+            printf("u result\n");
             FieldUtil::display(result.f.u, time, interval);
+
+            printf("v result\n");
             FieldUtil::display(result.f.v, time, interval);
+
+            printf("p result\n");
             FieldUtil::display(result.p, time, interval);
+
+            printf("s result\n");
             FieldUtil::display(result.s, time, interval);
-            result = navieStokes.calculate();
+            result = solver.calculate();
         }
     } catch (const std::runtime_error& e) {
         std::cerr << "Error: " << e.what() << std::endl;
