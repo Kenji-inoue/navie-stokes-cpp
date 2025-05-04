@@ -22,6 +22,7 @@ AnalysisResult NavieStokes2d::calculate() {
     const auto interval = poisson_.calculate(m_dp, m_result.s, 99999);
     modifyPressure(m_result.p, m_dp);
     modifyVelocity(m_fNext, m_dp);
+    calculateVorticity(m_result.rot, m_fNext);
 
     updateVelocityTimeScale();
     return m_result;
@@ -101,6 +102,15 @@ void NavieStokes2d::modifyVelocity(Velocity2d& f, const Field2d& dp) {
         }
     }
     updateRunoffBoundaryCondition(f);
+}
+
+void NavieStokes2d::calculateVorticity(Field2d& rot, const Velocity2d& f) {
+    for (int j = MESH_RANGE.minY; j <= MESH_RANGE.maxY; j++) {
+        for (int i = MESH_RANGE.minX; i <= MESH_RANGE.maxX; i++) {
+            rot[j][i] = ((f.v[j + 1][i + 1] - f.v[j + 1][i] + f.v[j][i + 1] - f.v[j][i]) / DX -
+                         (f.u[j + 1][i + 1] - f.u[j][i + 1] + f.u[j + 1][i] - f.u[j][i]) / DY) / 2;
+        }
+    }
 }
 
 void NavieStokes2d::updateVelocityTimeScale() {

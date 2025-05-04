@@ -3,10 +3,17 @@
 #include "Burgers2d.h"
 #include "Poisson2d.h"
 
+struct DragForce {
+    double x;
+    double y;
+};
+
 struct AnalysisResult {
     Velocity2d f;
     Field2d p;
     Field2d s;
+    Field2d rot;
+    DragForce drag;
 };
 
 class NavieStokes2d
@@ -26,6 +33,7 @@ private:
     void updateRunoffBoundaryCondition(Velocity2d& f);
     void modifyPressure(Field2d& p, Field2d& dp);
     void modifyVelocity(Velocity2d& f, const Field2d& dp);
+    void calculateVorticity(Field2d& rot, const Velocity2d& f);
     void updateVelocityTimeScale();
     const int MESH_X;
     const int MESH_Y;
