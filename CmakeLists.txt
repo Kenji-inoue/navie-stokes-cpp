@@ -15,4 +15,4 @@ add_subdirectory(2d/navierStokes/poisson)
 add_subdirectory(2d/navierStokes/burgers)
 add_subdirectory(2d/navierStokes/burgers/diffusion)
 add_subdirectory(2d/navierStokes/burgers/advection)
-add_subdirectory(Util)E:\Programming\C++\navie-stokes\build\2d\navierStokes\Release\NavierStokes2dwithoutObject.exe
+add_subdirectory(Util)
