@@ -19,7 +19,7 @@ struct AnalysisResult {
 class NavieStokes2d
 {
 public:
-    NavieStokes2d(int meshX, int meshY, double reynolds, double dx, double dy,
+    NavieStokes2d(int meshX, int meshY, double reynolds, double dx, double dy, double dt,
                 double omega, double epsilon, double pRef,
                 const MeshRange2d& range, AnalysisResult& result, const Object& object);
     ~NavieStokes2d() = default;
@@ -41,7 +41,7 @@ private:
     const double REYNOLDS;
     const double DX;
     const double DY;
-    const double DELTA_T;
+    const double DT;
     const double EPSILON;
     const double P_REF;
     const double OMEGA;

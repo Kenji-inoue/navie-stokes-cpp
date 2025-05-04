@@ -4,12 +4,12 @@
 #include "FieldUtil.h"
 
 NavieStokes2d::NavieStokes2d(int meshX, int meshY, double reynolds, 
-                        double dx, double dy, double omega, double epsilon, double pRef,
+                        double dx, double dy, double dt, double omega, double epsilon, double pRef,
                         const MeshRange2d& range, AnalysisResult& result, const Object& object)
     : MESH_X(meshX), MESH_Y(meshY), REYNOLDS(reynolds),
-      DX(dx), DY(dy), DELTA_T(0.5 * DX / 4.0),
+      DX(dx), DY(dy), DT(dt),
       EPSILON(epsilon), P_REF(pRef), OMEGA(omega), MESH_RANGE(range), m_result(result),
-      burgers_(meshX, meshY, reynolds, dx, dy, DELTA_T, result.f),
+      burgers_(meshX, meshY, reynolds, dx, dy, DT, result.f),
       poisson_(meshX, meshY, dx, dy, omega, epsilon, pRef, range),
       m_fNext(result.f), m_object(object)
 {
@@ -46,13 +46,13 @@ void NavieStokes2d::calculateProvisionalVelocity(Velocity2d& fNext, const Veloci
 Value NavieStokes2d::calculatePressureTermX(const Field2d& p, int i, int j) const {
     const Value frontPressure = (p[j][i] + p[j - 1][i]) / 2;
     const Value backPressure = (p[j][i - 1] + p[j - 1][i - 1]) / 2;
-    return DELTA_T * (frontPressure - backPressure) / DX;
+    return DT * (frontPressure - backPressure) / DX;
 }
 
 Value NavieStokes2d::calculatePressureTermY(const Field2d& p, int i, int j) const {
     const Value frontPressure = (p[j][i] + p[j][i - 1]) / 2;
     const Value backPressure = (p[j - 1][i] + p[j - 1][i - 1]) / 2;
-    return DELTA_T * (frontPressure - backPressure) / DY;
+    return DT * (frontPressure - backPressure) / DY;
 }
 
 void NavieStokes2d::calculateDivergenceOfVelocity(Field2d& s, const Velocity2d& f) {
@@ -63,7 +63,7 @@ void NavieStokes2d::calculateDivergenceOfVelocity(Field2d& s, const Velocity2d& 
             }
 
             s[j][i] = (((f.u[j + 1][i + 1] - f.u[j + 1][i]) / DX + (f.u[j][i + 1] - f.u[j][i]) / DX) / 2 +
-                      ((f.v[j + 1][i + 1] - f.v[j][i + 1]) / DY + (f.v[j + 1][i] - f.v[j][i]) / DY) / 2) / DELTA_T;
+                      ((f.v[j + 1][i + 1] - f.v[j][i + 1]) / DY + (f.v[j + 1][i] - f.v[j][i]) / DY) / 2) / DT;
         }
     }
 }
@@ -114,8 +114,8 @@ void NavieStokes2d::modifyVelocity(Velocity2d& f, const Field2d& dp) {
                 continue;
             }
 
-            f.u[j][i] = f.u[j][i] - DELTA_T / 2 * ((dp[j][i] - dp[j][i - 1]) / DX + (dp[j - 1][i] - dp[j - 1][i - 1]) / DX);
-            f.v[j][i] = f.v[j][i] - DELTA_T / 2 * ((dp[j][i] - dp[j - 1][i]) / DY + (dp[j][i - 1] - dp[j - 1][i - 1]) / DY);
+            f.u[j][i] = f.u[j][i] - DT / 2 * ((dp[j][i] - dp[j][i - 1]) / DX + (dp[j - 1][i] - dp[j - 1][i - 1]) / DX);
+            f.v[j][i] = f.v[j][i] - DT / 2 * ((dp[j][i] - dp[j - 1][i]) / DY + (dp[j][i - 1] - dp[j - 1][i - 1]) / DY);
         }
     }
     updateRunoffBoundaryCondition(f);

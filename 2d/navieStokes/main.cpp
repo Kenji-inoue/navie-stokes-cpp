@@ -51,6 +51,7 @@ int main() {
     double reynolds = 200;
     double dx = 16.0 / (Value)(meshX - 3);
     double dy = dx;
+    double dt = 0.5 * dx / 4.0;
     AnalysisResult result;
     double omega = 1.0;
     double epsilon = 1e-7;
@@ -69,8 +70,8 @@ int main() {
     defineObject(object, meshX, meshY);
 
     try {
-        NavieStokes2d solver(meshX, meshY, reynolds, dx, dy, 
-                                  omega, epsilon, pRef, range, result, object);
+        NavieStokes2d solver(meshX, meshY, reynolds, dx, dy, dt,
+                             omega, epsilon, pRef, range, result, object);
         const int interval = 50;
         const int maxIterations = 500;
         FileUtil file("result.csv");
