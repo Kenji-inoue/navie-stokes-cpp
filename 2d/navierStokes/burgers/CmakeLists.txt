@@ -3,13 +3,13 @@ project(Burgers2d LANGUAGES CXX C)
 add_library(${PROJECT_NAME}Lib
             Burgers2d.cpp)
 
-target_include_directories (${PROJECT_NAME}Lib PUBLIC
+target_include_directories (${PROJECT_NAME}Lib PRIVATE
     ${CMAKE_SOURCE_DIR}/Util
     ${CMAKE_CURRENT_SOURCE_DIR}/advection
     ${CMAKE_CURRENT_SOURCE_DIR}/diffusion
 )
 
-target_link_libraries(${PROJECT_NAME}Lib PUBLIC Util Advection2dLib Diffusion2dLib)
+target_link_libraries(${PROJECT_NAME}Lib PRIVATE Util Advection2dLib Diffusion2dLib)
 
 add_executable(${PROJECT_NAME}
                 main.cpp)
